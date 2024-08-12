@@ -12,7 +12,7 @@ const ibmPlexSerif =  IBM_Plex_Serif({
 
 export const metadata: Metadata = {
   title: "Flash Payments",
-  description: "Flash Payment is a modern Banking system for all",
+  description: "Flash Payment: The future of banking, redefined for everyone.",
   icons: {
     icon: '/icons/logo.svg'
   }
