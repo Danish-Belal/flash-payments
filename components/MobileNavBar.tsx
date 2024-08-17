@@ -32,7 +32,7 @@ const MobileNavBar = ({ user }: MobileNavProps) => {
         <SheetContent side="left" className="border-none bg-white">
           <Link
             href="/"
-            className="flex mb-12 cursor-pointer items-center gap-2"
+            className="flex mb-12 cursor-pointer items-center gap-1 px-4"
           >
             <Image
               src="/icons/logo.svg"
@@ -52,11 +52,11 @@ const MobileNavBar = ({ user }: MobileNavProps) => {
                     pathname === item.route ||
                     pathname.startsWith(`${item.route}/`);
                   return (
-                    <SheetClose asChild>
+                    <SheetClose asChild key={item.route}>
                       <Link
                         href={item.route}
                         key={item.label}
-                        className={cn("sidebar-link", {
+                        className={cn("mobilenav-sheet_close w-full", {
                           "bg-bank-gradient": isActive,
                         })}
                       >
