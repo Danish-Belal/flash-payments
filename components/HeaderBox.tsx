@@ -8,7 +8,7 @@ function HeaderBox({type =  "title", title, subtext,user}: HeaderBoxProps) {
           {title}
           {type === 'greeting' && (
                <span className="text-bankGradient">
-                &npsp;{user}</span>
+                &nbsp; {user}</span>
           )}
           </h1>
           <p className="header-box-subtitle">{subtext}</p>
