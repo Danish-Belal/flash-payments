@@ -11,7 +11,7 @@ import React from 'react'
 const Sidebar = ({user}: SiderbarProps) => {
      const pathname = usePathname();
   return (
-    <section className='sidebar'>
+    <section className='min-w-max sidebar'>
      <nav className='flex flex-col gap-6'>
           <Link href="/" className='flex mb-12 cursor-pointer items-center gap-2'>
                <Image  src="/icons/logo.svg" width={34} height={34} alt="Flash Logo"/>
