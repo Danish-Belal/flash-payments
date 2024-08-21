@@ -2,6 +2,7 @@
 import { type ClassValue, clsx } from "clsx";
 import qs from "query-string";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -193,3 +194,19 @@ export const getTransactionStatus = (date: Date) => {
 
   return date > twoDaysAgo ? "Processing" : "Success";
 };
+
+export const AuthformSchema = (type: string) => 
+  z.object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, {
+      message: 'Password must have more than 6 characters',
+    }),
+    firstName: type === 'sign-in' ? z.string().optional() : z.string().nonempty("First name is required"),
+    lastName: type === 'sign-in' ? z.string().optional() : z.string().nonempty("Last name is required"),
+    address: type === 'sign-in' ? z.string().optional() : z.string().max(50, "Address must be less than 50 characters"),
+    state: type === 'sign-in' ? z.string().optional() : z.string().nonempty("State is required"),
+    dob: type === 'sign-in' ? z.string().optional() : z.string().nonempty("Date of Birth is required"),
+    city: type === 'sign-in' ? z.string().optional() : z.string().nonempty("City is required"),
+    ssn: type === 'sign-in' ? z.string().optional() : z.string().length(9, "SSN must be exactly 9 characters"),
+    pincode: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{5}$/, "Pincode must be exactly 5 digits"),
+  });
