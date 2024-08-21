@@ -1,10 +1,10 @@
 'use client'
-import { Divide, Loader2 } from 'lucide-react'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { FormState, useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,13 @@ import CustomInput from './CustomInput'
 import { AuthformSchema } from '@/lib/utils'
 import countries from "countries-list"; 
 
+import { SignIn, SignUp } from '@/lib/actions/user.action'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
+
+
 const AuthForm = ({type} : {type:string}) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const[isLoading, setIsLoading] = useState(false)
   
@@ -26,16 +32,30 @@ const AuthForm = ({type} : {type:string}) => {
       email: "",
       password: "",
     
-
     },
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    setIsLoading(true);
-    console.log(values)
-    setIsLoading(false);
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) =>{
+    setIsLoading(true)
+    try{
+
+      if(type === 'sign-up'){
+        const newUser = SignUp(data);
+        setUser(newUser) 
+      }
+      if(type === 'sign-in'){
+        const loggedInUser = await SignIn({email: data.email , password: data.password});
+        if(loggedInUser) router.push('/')
+        
+
+      }
+      
+    }catch(error){
+      console.error('Error', error);
+    }
+
   }
+  
   return (
     <section>
       <header className='flex flex-col gap-5 md:gap-8'>
