@@ -18,6 +18,8 @@ import countries from "countries-list";
 import { SignIn, SignUp } from '@/lib/actions/user.action'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { PlaidApi } from 'plaid'
+import PlaidLink from './PlaidLink'
 
 
 const AuthForm = ({type} : {type:string}) => {
@@ -39,8 +41,21 @@ const AuthForm = ({type} : {type:string}) => {
     setIsLoading(true)
     try{
 
+      const userData = {
+        firstName: data.firstName!,
+         lastName: data.lastName!,
+         address: data.address!,
+         city: data.city!,
+         state: data.state!,
+         ssn: data.ssn!,
+         pincode: data.pincode!,
+         dob: data.dob!,
+         email: data.email,
+         password: data.password,
+
+      }
       if(type === 'sign-up'){
-        const newUser = SignUp(data);
+        const newUser = SignUp(userData);
         setUser(newUser) 
       }
       if(type === 'sign-in'){
@@ -73,12 +88,12 @@ const AuthForm = ({type} : {type:string}) => {
           </h1>
         </div>
       </header>
-      {user ? (
+       {user ? ( 
         <div className='flex flex-col gap-4'>
-          {/* PlaidLink */}
+          <PlaidLink user={user} variant='primary'/>
         </div>
-      ): 
-      (
+       ): 
+      ( 
         <>
         <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -129,7 +144,7 @@ const AuthForm = ({type} : {type:string}) => {
 
         </footer>
         </>
-      )
+       ) 
        }
     </section>
   )
