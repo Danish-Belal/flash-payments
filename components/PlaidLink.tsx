@@ -7,21 +7,36 @@ import { createLinkToken, exchangePublicToken } from '@/lib/actions/user.action'
 
 const PlaidLink = ({user, variant}: PlaidLinkProps) => {
   const router = useRouter();
+  // console.log('User in Plaid', user, variant);
+  
   const [token, setToken] = useState('')
+
   useEffect(()=>{
     const getLinkToken = async ()=>{
+      // console.log('Goin to create link for plaid');
+      
       const data = await createLinkToken(user);
-      setToken(data?.token)
+      // console.log("Data in plaid component",data.linkToken);
+      setToken(data?.linkToken)
     }
+
     getLinkToken();
   },[user]);
+
   const onSuccess  = useCallback<PlaidLinkOnSuccess>(async(public_token: string )=>{
-    await exchangePublicToken({
+    
+    // console.log('Public token', public_token);
+    
+    
+    const exchangeToken = await exchangePublicToken({
       publicToken: public_token,
-      user
+      user,
     })
+    // console.log('exchange Public Token in plaid', exchangeToken.publicTokenExchange);
+
     router.push('/')
   },[user])
+  
   const config: PlaidLinkOptions = {
     token,
     onSuccess

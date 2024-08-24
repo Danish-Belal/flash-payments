@@ -29,9 +29,10 @@ export const signIn = async({email,password}: signInProps) =>{
           
      }
 }
-export const signUp = async ( userData : SignUpParams) =>{
+export const signUp = async ( {password , ...userData} : SignUpParams) =>{
+     
      console.log("In Signup");     
-     const {email, firstName, lastName, password } = userData;
+     const {email, firstName, lastName } = userData;
 
      let newUserAccount;
      try{
@@ -39,37 +40,34 @@ export const signUp = async ( userData : SignUpParams) =>{
           const { account, database } = await createAdminClient();
 
           newUserAccount = await account.create(ID.unique(), email, password, `${firstName} ${lastName}`);
-          console.log('Account Created', newUserAccount);
+          // console.log('Account Created', newUserAccount);
           
           if(!newUserAccount) throw new Error('Error creating user');
 
-          // const dwollaCustomerUrl = await createDwollaCustomer({
-          //      ...userData,
-          //      type:'personal'
-          // });
+          const dwollaCustomerUrl = await createDwollaCustomer({
+               ...userData,
+               type:'personal'
+          });
 
-          // console.log("Deolla customer link created", dwollaCustomerUrl);
+          if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer');
+
+          const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+          // console.log("dwolla Customer Id", dwollaCustomerId);
           
+          const newUser = await database.createDocument(
+               DATABASE_ID!,
+               USER_COLLECTION_ID!,
+               ID.unique(),
+               {
+                    ...userData,
+                    userId: newUserAccount.$id,
+                    dwollaCustomerId,
+                    dwollaCustomerUrl
+               }
+          )
 
-          // if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer');
-
-          // const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
-          
-          // const newUser = database.createDocument(
-          //      DATABASE_ID!,
-          //      USER_COLLECTION_ID!,
-          //      ID.unique(),
-          //      {
-          //           ...userData,
-          //           userId: newUserAccount.$id,
-          //           dwollaCustomerId,
-          //           dwollaCustomerUrl
-          //      }
-          // )
-          // console.log("New User", newUser);
           
           const session = await account.createEmailPasswordSession(email, password);
-          console.log("Session", session);
           
           cookies().set("appwrite-session", session.secret, {
             path: "/",
@@ -80,7 +78,7 @@ export const signUp = async ( userData : SignUpParams) =>{
 
           // console.log("User",  newUser);
           
-          return parseStringify(newUserAccount);
+          return parseStringify(newUser);
           
 
      }catch (error) {
@@ -113,6 +111,8 @@ export async function loggedAccount(){
 }
 
 export const createLinkToken = async(user:User) =>{
+     console.log('Inside create link for plaid', user);
+     
      try {
           const tokenParams = {
                user:{
@@ -123,8 +123,12 @@ export const createLinkToken = async(user:User) =>{
                language: 'en',
                country_codes: ['US'] as CountryCode[],
           }
+          // console.log('Plaid token params' , tokenParams);
+          
 
           const response = await plaidClient.linkTokenCreate(tokenParams);
+          // console.log('PLaid response' , response);
+          
           return parseStringify({linkToken: response.data.link_token});
           
      } catch (error) {
@@ -170,10 +174,13 @@ export const exchangePublicToken = async ({
 }: exchangePublicTokenProps) =>{
      try {
           // Exchange public token for access token and item id
+          console.log('Inside exhange public token function');
+          
           const response = await plaidClient.itemPublicTokenExchange({
                public_token : publicToken
           });
-
+          // console.log('Response inside Plaid exchanfe public token', response);
+          
           const accessToken = response.data.access_token;
           const itemId = response.data.item_id;
 
@@ -183,12 +190,12 @@ export const exchangePublicToken = async ({
           })
 
           // Get the account Data.
-          const account  = accountResponse.data.accounts[0];
+          const accountData  = accountResponse.data.accounts[0];
 
           // create a processor token for Dwolla using the  access toekn and account
           const request: ProcessorTokenCreateRequest = {
                access_token: accessToken,
-               account_id: account.account_id,
+               account_id: accountData.account_id,
                processor: "dwolla" as ProcessorTokenCreateRequestProcessorEnum
 
           };
@@ -200,7 +207,7 @@ export const exchangePublicToken = async ({
           const fundingSourceUrl = await addFundingSource({
                dwollaCustomerId: user.dwollaCustomerId,
                processorToken,
-               bankName: account.name,
+               bankName: accountData.name,
           });
 
           // if funding source url is not created, throw and error
@@ -211,10 +218,10 @@ export const exchangePublicToken = async ({
           await createBankAccount({
                userId: user.$id,
                bankId: itemId,
-               accountId: account.account_id,
+               accountId: accountData.account_id,
                accessToken,
                fundingSourceUrl,
-               shareableId: encryptId(account.account_id),
+               shareableId: encryptId(accountData.account_id),
 
           });
 
