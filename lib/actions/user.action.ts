@@ -15,7 +15,8 @@ const {
      APPWRITE_BANK_COLLECTION_ID : BANK_COLLECTION_ID,
 } = process.env;
 
-export const SignIn = async({email,password}: signInProps) =>{
+export const signIn = async({email,password}: signInProps) =>{
+
      try{
           const { account } = await createAdminClient();
           // const signinUser = await account.createEmailPasswordSession(email,password);
@@ -28,8 +29,9 @@ export const SignIn = async({email,password}: signInProps) =>{
           
      }
 }
-export const SignUp = async (userData : SignUpParams) =>{
-     const {email, firstName, lastName , password} = userData;
+export const signUp = async ( userData : SignUpParams) =>{
+     console.log("In Signup");     
+     const {email, firstName, lastName, password } = userData;
 
      let newUserAccount;
      try{
@@ -37,31 +39,38 @@ export const SignUp = async (userData : SignUpParams) =>{
           const { account, database } = await createAdminClient();
 
           newUserAccount = await account.create(ID.unique(), email, password, `${firstName} ${lastName}`);
+          console.log('Account Created', newUserAccount);
+          
           if(!newUserAccount) throw new Error('Error creating user');
 
-          const dwollaCustomerUrl = await createDwollaCustomer({
-               ...userData,
-               type:'personal'
-          });
+          // const dwollaCustomerUrl = await createDwollaCustomer({
+          //      ...userData,
+          //      type:'personal'
+          // });
 
-          if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer');
-
-          const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+          // console.log("Deolla customer link created", dwollaCustomerUrl);
           
-          const newUser = database.createDocument(
-               DATABASE_ID!,
-               USER_COLLECTION_ID!,
-               ID.unique(),
-               {
-                    ...userData,
-                    userId: newUserAccount.$id,
-                    dwollaCustomerId,
-                    dwollaCustomerUrl
-               }
-          )
+
+          // if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer');
+
+          // const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+          
+          // const newUser = database.createDocument(
+          //      DATABASE_ID!,
+          //      USER_COLLECTION_ID!,
+          //      ID.unique(),
+          //      {
+          //           ...userData,
+          //           userId: newUserAccount.$id,
+          //           dwollaCustomerId,
+          //           dwollaCustomerUrl
+          //      }
+          // )
+          // console.log("New User", newUser);
           
           const session = await account.createEmailPasswordSession(email, password);
-        
+          console.log("Session", session);
+          
           cookies().set("appwrite-session", session.secret, {
             path: "/",
             httpOnly: true,
@@ -69,10 +78,14 @@ export const SignUp = async (userData : SignUpParams) =>{
             secure: true,
           });
 
-          return parseStringify(newUser);
+          // console.log("User",  newUser);
+          
+          return parseStringify(newUserAccount);
+          
 
      }catch (error) {
           console.error('Error', error);
+          return { error: error}
      }
 
 }
@@ -101,7 +114,7 @@ export async function loggedAccount(){
 
 export const createLinkToken = async(user:User) =>{
      try {
-          const tokenParam = {
+          const tokenParams = {
                user:{
                     client_user_id: user.$id
                },
@@ -111,7 +124,7 @@ export const createLinkToken = async(user:User) =>{
                country_codes: ['US'] as CountryCode[],
           }
 
-          const response = await plaidClient.linkTokenCreate(tokenParam);
+          const response = await plaidClient.linkTokenCreate(tokenParams);
           return parseStringify({linkToken: response.data.link_token});
           
      } catch (error) {

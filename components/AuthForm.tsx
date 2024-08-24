@@ -15,7 +15,7 @@ import CustomInput from './CustomInput'
 import { AuthformSchema } from '@/lib/utils'
 import countries from "countries-list"; 
 
-import { SignIn, SignUp } from '@/lib/actions/user.action'
+import { signIn, signUp } from '@/lib/actions/user.action'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { PlaidApi } from 'plaid'
@@ -28,6 +28,7 @@ const AuthForm = ({type} : {type:string}) => {
   const[isLoading, setIsLoading] = useState(false)
   
   const formSchema = AuthformSchema(type);
+  //1. Define your form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,39 +38,50 @@ const AuthForm = ({type} : {type:string}) => {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) =>{
-    setIsLoading(true)
-    try{
-
-      const userData = {
-        firstName: data.firstName!,
-         lastName: data.lastName!,
-         address: data.address!,
-         city: data.city!,
-         state: data.state!,
-         ssn: data.ssn!,
-         pincode: data.pincode!,
-         dob: data.dob!,
-         email: data.email,
-         password: data.password,
-
-      }
-      if(type === 'sign-up'){
-        const newUser = SignUp(userData);
-        setUser(newUser) 
-      }
-      if(type === 'sign-in'){
-        const loggedInUser = await SignIn({email: data.email , password: data.password});
-        if(loggedInUser) router.push('/')
+  //2. Define a submit handler
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+    try {
+      if (type === 'sign-up') {
+        const userData = {
+          firstName: data.firstName!,
+          lastName: data.lastName!,
+          address: data.address!,
+          city: data.city!,
+          state: data.state!,
+          ssn: data.ssn!,
+          pincode: data.pincode!,
+          dob: data.dob!,
+          email: data.email,
+          password: data.password,
+        };
+        // console.log(userData);
+        // const userDataJson = JSON.parse(JSON.stringify(userData))
+        // console.log('UserDataJson', userDataJson);
         
-
+        const result = await signUp(userData)
+        console.log(result);
+        
+        if (result.error) {
+          console.error(result.error); // Handle error
+          return;
+        }
+  
+        setUser(result); // Set user only if no error
+        console.log("USERDATA", result);
+  
+      } else if (type === 'sign-in') {
+        const loggedInUser = await signIn({ email: data.email, password: data.password });
+        if (loggedInUser) router.push('/');
       }
-      
-    }catch(error){
+  
+    } catch (error) {
       console.error('Error', error);
+    } finally {
+      setIsLoading(false);
     }
-
   }
+  
   
   return (
     <section>
