@@ -7,23 +7,26 @@ import React from 'react'
 const Home = async () => {
      const loggedInUser = await getLoggedInUser();
   return (
-    <section className='home'>
-     <div className='home-content'>
-          <header className='home-header'>
+    <section className="home">
+     <div className="home-content">
+          <header className="home-header">
                <HeaderBox 
                     type="greeting"
                     title="Welcome"
                     user={ loggedInUser?.name || 'Guest'}
                     subtext="Access and manage you account and transaction efficiently."
                />
-          </header>
+          
           <TotalBalanceBox 
            accounts={[]}
            totalBanks={2}
            totalCurrentBalance={12340.65}
           />
+          </header>
+
           Recent Transacrions
      </div>
+     
      <RightSidebar 
      user={loggedInUser}
      transactions={[]}
