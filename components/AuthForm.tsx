@@ -46,29 +46,25 @@ const AuthForm = ({type} : {type:string}) => {
         const userData = {
           firstName: data.firstName!,
           lastName: data.lastName!,
-          address: data.address!,
+          address1: data.address!,
           city: data.city!,
           state: data.state!,
           ssn: data.ssn!,
-          pincode: data.pincode!,
-          dob: data.dob!,
+          postalCode: data.pincode!,
+          dateOfBirth: data.dob!,
           email: data.email,
           password: data.password,
-        };
-        // console.log(userData);
-        // const userDataJson = JSON.parse(JSON.stringify(userData))
-        // console.log('UserDataJson', userDataJson);
+        };        
+        const newUser = await signUp(userData)
+        // console.log("User Created",newUser);
         
-        const result = await signUp(userData)
-        console.log(result);
-        
-        if (result.error) {
-          console.error(result.error); // Handle error
+        if (newUser.error) {
+          console.error(newUser.error); // Handle error
           return;
         }
   
-        setUser(result); // Set user only if no error
-        console.log("USERDATA", result);
+        setUser(newUser); // Set user only if no error
+        ;
   
       } else if (type === 'sign-in') {
         const loggedInUser = await signIn({ email: data.email, password: data.password });
