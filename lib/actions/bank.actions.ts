@@ -21,7 +21,7 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
   try {
     // get banks from db
     const banks = await getBanks({ userId });
-    //  console.log("BANKSSSS",banks);
+     console.log("BANKSSSS",banks);
      
     const accounts = await Promise.all(
       banks?.map(async (bank: Bank) => {
@@ -47,8 +47,10 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
           type: accountData.type as string,
           subtype: accountData.subtype! as string,
           appwriteItemId: bank.$id,
-          sharableId: bank.sharableId,
+          sharableId: bank.shareableId,
         };
+        // console.log("SHARABLE ID",account.sharableId);
+        
 
         return account;
       })
