@@ -141,7 +141,7 @@ export async function loggedAccount(){
 }
 
 export const createLinkToken = async(user:User) =>{
-     console.log('Inside create link for plaid', user);
+     // console.log('Inside create link for plaid', user);
      
      try {
           const tokenParams = {
