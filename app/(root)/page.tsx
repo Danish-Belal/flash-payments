@@ -19,7 +19,7 @@ const Home = async ({searchParams : {id,page}}:SearchParamProps ) => {
      // console.log(appwriteItemId);
      
      const account = await getAccount({appwriteItemId});
-     console.log("ACCOUNT" , account);
+     // console.log("ACCOUNT AND TRANSACTIONS" , account);
      
 
      // console.log(
@@ -48,7 +48,7 @@ const Home = async ({searchParams : {id,page}}:SearchParamProps ) => {
           {/* Recent Transacrions */}
           <RecentTransactions 
                accounts= {accountData}
-               transactions = {accounts?.transactions}
+               transactions = {account?.transactions}
                appwriteItemId = {appwriteItemId}
                page={currentPage}
           />
@@ -56,7 +56,7 @@ const Home = async ({searchParams : {id,page}}:SearchParamProps ) => {
      
      <RightSidebar 
      user={loggedInUser}
-     transactions={accounts?.transactions}
+     transactions={account?.transactions}
      banks={accountData?.slice(0,2)}
      />
     </section>
