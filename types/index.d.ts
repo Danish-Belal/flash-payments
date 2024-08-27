@@ -60,7 +60,7 @@ declare type Account = {
   type: string;
   subtype: string;
   appwriteItemId: string;
-  shareableId: string;
+  sharableId: string;
 };
 
 declare type Transaction = {
