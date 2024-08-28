@@ -133,6 +133,7 @@ export async function loggedAccount(){
           const {account} = await createSessionClient();
           cookies().delete('appwrite-session');
           account.deleteSession('current');
+          return true
 
      }catch(error){
           console.log(error);
