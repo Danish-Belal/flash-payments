@@ -21,7 +21,7 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
   try {
     // get banks from db
     const banks = await getBanks({ userId });
-     console.log("BANKSSSS",banks);
+    //  console.log("BANKSSSS",banks);
      
     const accounts = await Promise.all(
       banks?.map(async (bank: Bank) => {

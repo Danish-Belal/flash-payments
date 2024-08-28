@@ -59,7 +59,7 @@ export const signIn = async({email,password}: signInProps) =>{
 }
 export const signUp = async ( {password , ...userData} : SignUpParams) =>{
      
-     console.log("In Signup");     
+     // console.log("In Signup");     
      const {email, firstName, lastName } = userData;
 
      let newUserAccount;
@@ -205,7 +205,7 @@ export const exchangePublicToken = async ({
 }: exchangePublicTokenProps) =>{
      try {
           // Exchange public token for access token and item id
-          console.log('Inside exhange public token function');
+          // console.log('Inside exhange public token function');
           
           const response = await plaidClient.itemPublicTokenExchange({
                public_token : publicToken

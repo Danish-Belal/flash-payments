@@ -33,14 +33,14 @@ export const createTransaction = async (transaction: CreateTransactionProps) => 
 export const getTransactionsByBankId = async ({bankId}: getTransactionsByBankIdProps) => {
   try {
     const { database } = await createAdminClient();
-    console.log("BANK ID", bankId);
+    // console.log("BANK ID", bankId);
     
     const senderTransactions = await database.listDocuments(
       DATABASE_ID!,
       TRANSACTION_COLLECTION_ID!,
       [Query.equal('senderBankId', bankId)],
     )
-    console.log("SENDER TRANSACTION", senderTransactions);
+    // console.log("SENDER TRANSACTION", senderTransactions);
     
     const receiverTransactions = await database.listDocuments(
       DATABASE_ID!,
