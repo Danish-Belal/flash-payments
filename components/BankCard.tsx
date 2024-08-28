@@ -5,11 +5,11 @@ import React from 'react'
 import Copy from './Copy'
 
 const BankCard = ({account, userName, showBalance=true} : CreditCardProps) => {
-     console.log("BANK CARD", account);
+     // console.log("BANK CARD", account);
      
   return (
     <div className='flex flex-col'>
-     <Link href={`/transaction-history/?${account.appwriteItemId}`} className='bank-card '>
+     <Link href={`/my-banks/?${account.appwriteItemId}`} className='bank-card '>
      <div className='bank-card_content'>
           <div>
                <h1 className='text-16 font-semibold text-white'>
