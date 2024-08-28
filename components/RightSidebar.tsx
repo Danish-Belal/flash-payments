@@ -1,12 +1,53 @@
+'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import BankCard from './BankCard'
 import { countTransactionCategories } from '@/lib/utils'
 import {Category} from './Category'
+import PlaidLink from './PlaidLink'
+import { createLinkToken, exchangePublicToken } from '@/lib/actions/user.action'
+import { PlaidLinkOnSuccess, PlaidLinkOptions, usePlaidLink } from 'react-plaid-link'
+import { Button } from './ui/button'
 
 const RightSidebar = ({user, banks, transactions}: RightSidebarProps) => {
      const categories:  CategoryCount[] = countTransactionCategories(transactions);
+
+     const [token, setToken] = useState('')
+
+  useEffect(()=>{
+    const getLinkToken = async ()=>{
+      // console.log('Goin to create link for plaid');
+      
+      const data = await createLinkToken(user);
+      // console.log("Data in plaid component",data.linkToken);
+      setToken(data?.linkToken)
+    }
+
+    getLinkToken();
+  },[user]);
+
+  const onSuccess  = useCallback<PlaidLinkOnSuccess>(async(public_token: string )=>{
+    
+    // console.log('Public token', public_token);
+    
+    
+    const exchangeToken = await exchangePublicToken({
+      publicToken: public_token,
+      user,
+    })
+    // console.log('exchange Public Token in plaid', exchangeToken.publicTokenExchange);
+
+    
+  },[user])
+  
+  const config: PlaidLinkOptions = {
+    token,
+    onSuccess
+  }
+
+  const {open , ready} = usePlaidLink(config);
+
   return (
     <aside className='right-sidebar'>
      <section className='flex flex-col pb-b'>
@@ -25,11 +66,12 @@ const RightSidebar = ({user, banks, transactions}: RightSidebarProps) => {
      <section className='banks'>
           <div className='flex w-full justify-between'>
                <h2 className='header-2'>Your Banks</h2>
-               <Link href='/' className='flex gap-2'>
+               
+               <Button onClick={()=> open()} disabled={!ready}>
                <Image src="/icons/plus.svg" width={20} height={20} alt='plus'
                />
-               <h2 className='text-14 font-semibold text-gray-600'>Add Banks</h2>
-               </Link>
+                    <h2 className='text-14 font-semibold text-gray-600'>Add Banks</h2>
+               </Button>
           </div>
           {banks?.length > 0 && (
                <div className='relative flex flex-1 flex-col items-center justify-center gap-5'>

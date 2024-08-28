@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 
 const Copy = ({ title }: { title: string }) => {
-     console.log("SHARABLE INCOPY" , title);
+    //  console.log("SHARABLE INCOPY" , title);
      
   const [hasCopied, setHasCopied] = useState(false);
 
