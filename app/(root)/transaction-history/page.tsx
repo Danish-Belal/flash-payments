@@ -16,6 +16,7 @@ const TransactionHistory = async({searchParams: {id,page}}:SearchParamProps) => 
      if(!accounts) return;
 
      const accountData = accounts?.data;
+
      const appwriteItemId = (id as string) || accountData[0]?.appwriteItemId;
      // console.log(appwriteItemId);
      
@@ -24,7 +25,7 @@ const TransactionHistory = async({searchParams: {id,page}}:SearchParamProps) => 
       const rowsPerPage = 10;
       const totalNoOfPage = Math.ceil(account?.transactions.length/rowsPerPage);
 
-      const indexOfLastTransaction = page * rowsPerPage;
+      const indexOfLastTransaction = currentPage * rowsPerPage;
       const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
 
       const currentTransactions = account?.transactions.slice(
