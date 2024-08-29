@@ -60,18 +60,30 @@ export const signIn = async({email,password}: signInProps) =>{
 export const signUp = async ( {password , ...userData} : SignUpParams) =>{
      
      // console.log("In Signup");     
-     const {email, firstName, lastName } = userData;
+     const {email, firstName, lastName  } = userData;
+     
+     var aadharNumber;
 
      let newUserAccount;
+     if (userData.ssn.length === 12) {
+          aadharNumber = userData.ssn;
+          userData.ssn = userData.ssn.slice(0, -3); // Remove the last 3 digits of the SSN
+      }
+      if (userData.postalCode.length === 6) {
+          userData.postalCode = userData.postalCode.slice(0, -1); // Remove the last digit of the Pincode
+      }
      try{
 
           const { account, database } = await createAdminClient();
-
+          
           newUserAccount = await account.create(ID.unique(), email, password, `${firstName} ${lastName}`);
           // console.log('Account Created', newUserAccount);
           
           if(!newUserAccount) throw new Error('Error creating user');
+           console.log("USER DATA WHILE GOIN TO CRETE DWOLLA", userData);
+          //  console.log("USER DATA WHILE GOING TO CREATE DWOLLA", ...Object.entries(userData));
 
+           
           const dwollaCustomerUrl = await createDwollaCustomer({
                ...userData,
                type:'personal'
@@ -90,7 +102,8 @@ export const signUp = async ( {password , ...userData} : SignUpParams) =>{
                     ...userData,
                     userId: newUserAccount.$id,
                     dwollaCustomerId,
-                    dwollaCustomerUrl
+                    dwollaCustomerUrl,
+                    aadharNumber
                }
           )
 

@@ -204,9 +204,13 @@ export const AuthformSchema = (type: string) =>
     firstName: type === 'sign-in' ? z.string().optional() : z.string().nonempty("First name is required"),
     lastName: type === 'sign-in' ? z.string().optional() : z.string().nonempty("Last name is required"),
     address: type === 'sign-in' ? z.string().optional() : z.string().max(50, "Address must be less than 50 characters"),
-    state: type === 'sign-in' ? z.string().optional() : z.string().nonempty("State is required"),
+    state: type === 'sign-in' ? z.string().optional() : z.string().nonempty("State is required, 2 latter only"),
     dob: type === 'sign-in' ? z.string().optional() : z.string().nonempty("Date of Birth is required"),
     city: type === 'sign-in' ? z.string().optional() : z.string().nonempty("City is required"),
-    ssn: type === 'sign-in' ? z.string().optional() : z.string().length(9, "SSN must be exactly 9 characters"),
-    pincode: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{5}$/, "Pincode must be exactly 5 digits"),
+    ssn: type === 'sign-in' ? z.string().optional() : z.string().refine(
+      (value) => value.length === 9 || value.length === 12, {
+        message: "SSN must be exactly 9 or 12 digits",
+      }
+    ),
+    pincode: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{5,6}$/, "Pincode must be exactly 5 or 6(India) digits"),
   });
