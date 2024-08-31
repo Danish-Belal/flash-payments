@@ -54,8 +54,8 @@ export const signIn = async({email,password}: signInProps) =>{
 
 
      }catch(error){
-          console.log(error);
-          return {error:"",message:"Error"};
+          // console.log(error.response.message);
+          return {error: " " ,message: error.response.message};
      }
 }
 export const signUp = async ({ password, ...userData }: SignUpParams) => {
