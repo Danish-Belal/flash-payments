@@ -328,3 +328,10 @@ declare interface getBankProps {
 declare interface getBankByAccountIdProps {
   accountId: string;
 }
+
+declare interface AuthFormHeaderProps {
+  type: string;
+  user: any;
+  isError: boolean;
+  formMessage: string;
+}

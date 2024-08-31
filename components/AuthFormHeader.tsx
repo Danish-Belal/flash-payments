@@ -1,12 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-interface AuthFormHeaderProps {
-  type: string;
-  user: any;
-  isError: boolean;
-  formMessage: string;
-}
+
 
 const AuthFormHeader = ({ type, user, isError, formMessage }: AuthFormHeaderProps) => (
   <header className="flex flex-col gap-5 md:gap-8">
@@ -17,10 +12,10 @@ const AuthFormHeader = ({ type, user, isError, formMessage }: AuthFormHeaderProp
 
     <div className="flex flex-col gap-1 md:gap-3">
       <h1 className="text-24 lg:text-36 font-semibold text-gray-900">
-        {user ? "Link Account" : type === "sign-in" ? "Sign In" : "Sign Up"}
+        {user  && type === 'sign-up' ? ("Link Account" ): type === "sign-in" ? "Sign In" : "Sign Up"}
       </h1>
       <p className={`text-16 font-normal ${isError ? "text-red-600" : "text-gray-600"}`}>
-        {user ? "Link Your Account to get Started" : isError ? formMessage : "Please Enter your Details"}
+        {user  && type === 'sign-up' ? "Link Your Account to get Started" : isError ? formMessage : "Please Enter your Details"}
       </p>
     </div>
   </header>
