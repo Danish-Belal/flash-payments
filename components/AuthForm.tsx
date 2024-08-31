@@ -1,19 +1,15 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 import { Form } from "@/components/ui/form";
-
-import { AuthformSchema } from "@/lib/utils";
+import { AuthformSchema, formatDateforDOB } from "@/lib/utils";
 import PlaidLink from "./PlaidLink";
 import { signIn, signUp } from "@/lib/actions/user.action";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFields from "./AuthFormFields";
 import AuthFormButton from "./AuthFormButton";
@@ -46,6 +42,8 @@ const AuthForm = ({ type }: { type: string }) => {
 
     try {
       if (type === "sign-up") {
+        let dataOfBirth = formatDateforDOB(data.dob!);
+        
         const userData = {
           firstName: data.firstName!,
           lastName: data.lastName!,
@@ -54,7 +52,7 @@ const AuthForm = ({ type }: { type: string }) => {
           state: data.state!,
           ssn: data.ssn!,
           postalCode: data.pincode!,
-          dateOfBirth: data.dob!,
+          dateOfBirth: dataOfBirth!,
           email: data.email,
           password: data.password,
         };
@@ -80,7 +78,8 @@ const AuthForm = ({ type }: { type: string }) => {
         }
 
         setUser(loggedInUser); // Set the user if login is successful
-        router.push("/");
+        router.push("/"); // Redirect immediately after successful login
+        return; // Exit the function
       }
     } catch (error) {
       console.error("Error", error);
@@ -94,25 +93,24 @@ const AuthForm = ({ type }: { type: string }) => {
   return (
     <section className="auth-form">
       
-       <AuthFormHeader type={type} user={user} isError={isError} formMessage={formMessage} />
+        {/* Conditionally render AuthFormHeader */}
+    {(type === "sign-up" || (type === "sign-in" && isError)) && user && (
+      <AuthFormHeader type={type} user={user} isError={isError} formMessage={formMessage} />
+    )}
 
-      
-
-      {user ? (
+      {user && type === "sign-up" ? ( // Show options only for sign-up
         <>
-        
         <div className="flex flex-col gap-4">
           <PlaidLink user={user} variant="primary" />
         </div>
         <Button 
-        variant="secondary" 
-        onClick={() => router.push('/')}
-        className="mt-4"
-      >
-        <p className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out">Go to Dashboard</p>
-      </Button>
-      </>
-
+          variant="secondary" 
+          onClick={() => router.push('/')}
+          className="mt-4"
+        >
+          <p className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out">Go to Dashboard</p>
+        </Button>
+        </>
       ) : (
         <>
           <Form {...form}>
