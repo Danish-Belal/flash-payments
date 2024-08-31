@@ -8,6 +8,7 @@ import { languages } from "countries-list";
 import { plaidClient } from "../plaid";
 import { revalidatePath } from "next/cache";
 import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
+import { error } from "console";
 
 const {
      APPWRITE_DATABASE_ID : DATABASE_ID,
@@ -54,80 +55,90 @@ export const signIn = async({email,password}: signInProps) =>{
 
      }catch(error){
           console.log(error);
-          
+          return {error:"",message:"Error"};
      }
 }
-export const signUp = async ( {password , ...userData} : SignUpParams) =>{
-     
-     // console.log("In Signup");     
-     const {email, firstName, lastName  } = userData;
-     
-     var aadharNumber;
+export const signUp = async ({ password, ...userData }: SignUpParams) => {
 
+     const { email, firstName, lastName, ssn, postalCode } = userData;
+     let aadharNumber: string | undefined;
      let newUserAccount;
-     if (userData.ssn.length === 12) {
-          aadharNumber = userData.ssn;
-          userData.ssn = userData.ssn.slice(0, -3); // Remove the last 3 digits of the SSN
-      }
-      if (userData.postalCode.length === 6) {
-          userData.postalCode = userData.postalCode.slice(0, -1); // Remove the last digit of the Pincode
-      }
-     try{
-
-          const { account, database } = await createAdminClient();
-          
-          newUserAccount = await account.create(ID.unique(), email, password, `${firstName} ${lastName}`);
-          // console.log('Account Created', newUserAccount);
-          
-          if(!newUserAccount) throw new Error('Error creating user');
-           console.log("USER DATA WHILE GOIN TO CRETE DWOLLA", userData);
-          //  console.log("USER DATA WHILE GOING TO CREATE DWOLLA", ...Object.entries(userData));
-
-           
-          const dwollaCustomerUrl = await createDwollaCustomer({
-               ...userData,
-               type:'personal'
-          });
-
-          if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer');
-
-          const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
-          // console.log("dwolla Customer Id", dwollaCustomerId);
-          
-          const newUser = await database.createDocument(
-               DATABASE_ID!,
-               USER_COLLECTION_ID!,
-               ID.unique(),
-               {
-                    ...userData,
-                    userId: newUserAccount.$id,
-                    dwollaCustomerId,
-                    dwollaCustomerUrl,
-                    aadharNumber
-               }
-          )
-
-          
-          const session = await account.createEmailPasswordSession(email, password);
-          
-          cookies().set("appwrite-session", session.secret, {
-            path: "/",
-            httpOnly: true,
-            sameSite: "strict",
-            secure: true,
-          });
-
-          // console.log("User",  newUser);
-          
-          return parseStringify(newUser);
-          
-
-     }catch (error) {
-          console.error('Error', error);
-          return { error: error}
+ 
+     // Helper function to log errors
+     const logError = (message: string, error: any) => {
+         console.error(message, error);
+     };
+ 
+     // Process SSN and postal code
+     if (ssn?.length === 12) {
+         aadharNumber = ssn;
+         userData.ssn = ssn.slice(0, -3); // Remove the last 3 digits of the SSN
      }
-
-}
+ 
+     if (postalCode?.length === 6) {
+         userData.postalCode = postalCode.slice(0, -1); // Remove the last digit of the Pincode
+     }
+     userData.state = 'NY';    // By defult adding state as US states.
+ 
+     try {
+         const { account, database } = await createAdminClient();
+          
+         
+         // Step 1: Create Dwolla customer first
+         const dwollaCustomerUrl = await createDwollaCustomer({
+             ...userData,
+             type: 'personal',
+         });
+         
+         
+ 
+         if (!dwollaCustomerUrl) {
+             throw new Error('Error creating Dwolla customer');
+         }
+ 
+         const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+         
+ 
+         // Step 2: Create user account
+         newUserAccount = await account.create(ID.unique(), email, password, `${firstName} ${lastName}`);
+ 
+         if (!newUserAccount) {
+             throw new Error('Error creating user account');
+         }
+ 
+         // Step 3: Save the user data to the database
+         const newUser = await database.createDocument(
+             DATABASE_ID!,
+             USER_COLLECTION_ID!,
+             ID.unique(),
+             {
+                 ...userData,
+                 userId: newUserAccount.$id,
+                 dwollaCustomerId,
+                 dwollaCustomerUrl,
+                 aadharNumber,
+             }
+         );
+ 
+         // Step 4: Create a session for the user
+         const session = await account.createEmailPasswordSession(email, password);
+ 
+         cookies().set("appwrite-session", session.secret, {
+             path: "/",
+             httpOnly: true,
+             sameSite: "strict",
+             secure: true,
+         });
+ 
+         return parseStringify(newUser);
+ 
+     } catch (error) {
+         logError("Error during sign-up process", error);
+         return {
+          message: 'An error occured', error
+         }
+     }
+ };
 
 
 export async function getLoggedInUser() {
