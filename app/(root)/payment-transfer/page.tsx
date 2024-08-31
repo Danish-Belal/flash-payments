@@ -1,4 +1,5 @@
 import HeaderBox from '@/components/HeaderBox'
+import PageEmpty from '@/components/PageEmpty';
 import PaymentTransferForm from '@/components/PaymentTransferForm'
 import { getAccounts } from '@/lib/actions/bank.actions';
 import { getLoggedInUser } from '@/lib/actions/user.action';
@@ -9,7 +10,9 @@ const PaymentTransfer = async() => {
 
      const accounts = await getAccounts({userId: loggedInUser.$id});
      
-     if(!accounts) return;
+     if (!accounts || accounts.data.length === 0) {
+      return <PageEmpty message='Not Able to transfer Fund.' />;
+    }
 
      const accountData = accounts?.data;
 

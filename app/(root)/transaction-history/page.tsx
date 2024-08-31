@@ -1,4 +1,5 @@
 import HeaderBox from '@/components/HeaderBox'
+import PageEmpty from '@/components/PageEmpty';
 import { Pagination } from '@/components/Pagination';
 import TransactionsTable from '@/components/TransactionsTable';
 import { getAccount, getAccounts } from '@/lib/actions/bank.actions';
@@ -10,10 +11,14 @@ import { date } from 'zod';
 const TransactionHistory = async({searchParams: {id,page}}:SearchParamProps) => {
   const currentPage = Number(page as string) || 1;
      const loggedInUser = await getLoggedInUser();
-
+    // console.log("Logged In User", loggedInUser);
+    
      const accounts = await getAccounts({userId: loggedInUser.$id});
+    //  console.log('Account in Transaction Page', accounts); 
      
-     if(!accounts) return;
+     if (!accounts || accounts.data.length === 0) {
+      return <PageEmpty message='No transactions found. Please try again later.' />;
+    }
 
      const accountData = accounts?.data;
 
