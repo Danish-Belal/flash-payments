@@ -58,9 +58,9 @@ const AuthForm = ({ type }: { type: string }) => {
         };
         const newUser = await signUp(userData);
         
-        if (newUser.error) {
+        if (newUser.error) {         
           setIsError(true);
-          setformMessage(newUser.error); // Set error message
+          setformMessage(newUser.message); // Set error message
           return;
         }
   
@@ -94,7 +94,7 @@ const AuthForm = ({ type }: { type: string }) => {
     <section className="auth-form">
       
         {/* Conditionally render AuthFormHeader */}
-    {(type === "sign-up" || (type === "sign-in" && isError)) && user && (
+    {(type === "sign-up" || (type === "sign-in" && isError ) ) && ( //work here
       <AuthFormHeader type={type} user={user} isError={isError} formMessage={formMessage} />
     )}
 

@@ -14,8 +14,15 @@ const AuthFormHeader = ({ type, user, isError, formMessage }: AuthFormHeaderProp
       <h1 className="text-24 lg:text-36 font-semibold text-gray-900">
         {user  && type === 'sign-up' ? ("Link Account" ): type === "sign-in" ? "Sign In" : "Sign Up"}
       </h1>
-      <p className={`text-16 font-normal ${isError ? "text-red-600" : "text-gray-600"}`}>
-        {user  && type === 'sign-up' ? "Link Your Account to get Started" : isError ? formMessage : "Please Enter your Details"}
+      <p 
+        className={`text-[16px] font-semibold ${isError ? "text-red-600" : "text-gray-600"}`} 
+        style={{ fontFamily: 'Roboto, sans-serif' }}
+      >
+        {user && type === 'sign-up' 
+          ? "Link Your Account to get Started" 
+          : isError 
+            ? formMessage 
+            : "Please Enter your Details"}
       </p>
     </div>
   </header>
