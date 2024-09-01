@@ -83,7 +83,23 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
      try {
          const { account, database } = await createAdminClient();
           
-         
+          // Step 1: Check if email already exists
+        const existingUser = await database.listDocuments(
+          DATABASE_ID!,
+          USER_COLLECTION_ID!,
+          [Query.equal('email', email)]
+      );
+
+     // console.log("Existing USERRRRRRRRRRRR",existingUser);
+     
+      if (existingUser.total > 0) {
+          // Return a custom error object
+          return {
+              message: 'Email already registered',
+              error: true
+          };
+      }
+
          // Step 1: Create Dwolla customer first
          const dwollaCustomerUrl = await createDwollaCustomer({
              ...userData,
