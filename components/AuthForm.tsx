@@ -94,7 +94,7 @@ const AuthForm = ({ type }: { type: string }) => {
     <section className="auth-form">
       
         {/* Conditionally render AuthFormHeader */}
-    {(type === "sign-up" || (type === "sign-in" && isError ) ) && ( //work here
+    {(type === "sign-up" || (type === "sign-in"  ) ) && ( //work here
       <AuthFormHeader type={type} user={user} isError={isError} formMessage={formMessage} />
     )}
 

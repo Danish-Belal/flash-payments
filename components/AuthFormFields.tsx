@@ -53,19 +53,37 @@ const AuthFormFields = ({ type, control }: AuthFormFieldsProps) => (
                     label="SSN / AADHAAR No" 
                     placeholder="Example: 1234" />
         </div>
+        <CustomInput 
+            control={control} 
+            name="email" 
+            label="Email" 
+            placeholder="Please enter your email" />
+      <CustomInput 
+            control={control} 
+            name="password" 
+            label="Password" 
+            placeholder="Please enter your password" />
       </>
     )}
+    
+      {type === "sign-in" && (
+        <>
+         <p>Just wanna checkout application?? use blow credential</p>
+      <p className="font-semibold">Email: test@flashpay.com</p>
+      <p className="font-semibold">Pass: TestUser@FlashPay</p>
+      <CustomInput 
+            control={control} 
+            name="email" 
+            label="Email" 
+            placeholder="Please enter your email" />
+      <CustomInput 
+            control={control} 
+            name="password" 
+            label="Password" 
+            placeholder="Please enter your password" />
+      </>
 
-    <CustomInput 
-          control={control} 
-          name="email" 
-          label="Email" 
-          placeholder="Please enter your email" />
-    <CustomInput 
-          control={control} 
-          name="password" 
-          label="Password" 
-          placeholder="Please enter your password" />
+    )}
   </>
 );
 
