@@ -215,23 +215,29 @@ export const AuthformSchema = (type: string) =>
     pincode: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{5,6}$/, "Pincode must be exactly 5 or 6(India) digits"),
   });
 
-export function formatDateforDOB(inputDate: string): string | null {
-    const dateRegex = /^\d{4}\/\d{2}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}$/;
+  export function formatDateforDOB(inputDate: string): string | null {
+    // Updated regex to include YYYY-MM-DD format
+    const dateRegex = /^\d{4}\/\d{2}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}$|^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(inputDate)) return null;
-  
-    let [year, month, day] = [0, 0, 0];
-  
-    if (inputDate.includes('/')) {
-      const parts = inputDate.split('/');
-      if (parts[0].length === 4) {
-        // YYYY/MM/DD
-        [year, month, day] = parts.map(Number);
-      } else {
-        // DD/MM/YYYY or MM/DD/YYYY (you can add logic to determine which one it is)
-        [day, month, year] = parts.map(Number);
-      }
+
+    // If the input is already in YYYY-MM-DD format, return it as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(inputDate)) {
+        return inputDate;
     }
-  
+
+    let [year, month, day] = [0, 0, 0];
+
+    if (inputDate.includes('/')) {
+        const parts = inputDate.split('/');
+        if (parts[0].length === 4) {
+            // YYYY/MM/DD
+            [year, month, day] = parts.map(Number);
+        } else {
+            // DD/MM/YYYY or MM/DD/YYYY (you can add logic to determine which one it is)
+            [day, month, year] = parts.map(Number);
+        }
+    }
+
     // Ensure the date is in YYYY-MM-DD format
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  }
+}
