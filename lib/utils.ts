@@ -197,22 +197,51 @@ export const getTransactionStatus = (date: Date) => {
 
 export const AuthformSchema = (type: string) => 
   z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(8, {
-      message: 'Password must have more than 6 characters',
-    }),
-    firstName: type === 'sign-in' ? z.string().optional() : z.string().nonempty("First name is required"),
-    lastName: type === 'sign-in' ? z.string().optional() : z.string().nonempty("Last name is required"),
-    address: type === 'sign-in' ? z.string().optional() : z.string().max(50, "Address must be less than 50 characters"),
-    state: type === 'sign-in' ? z.string().optional() : z.string().nonempty("State is required, 2 latter only"),
-    dob: type === 'sign-in' ? z.string().optional() : z.string().nonempty("Date of Birth is required"),
-    city: type === 'sign-in' ? z.string().optional() : z.string().nonempty("City is required"),
-    ssn: type === 'sign-in' ? z.string().optional() : z.string().refine(
-      (value) => value.length === 9 || value.length === 12, {
-        message: "SSN must be exactly 9 or 12 digits",
-      }
-    ),
-    pincode: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{5,6}$/, "Pincode must be exactly 5 or 6(India) digits"),
+    email: type === 'user-details-bank' 
+      ? z.string().optional() 
+      : z.string().email("Invalid email address"),
+    
+    password: type === 'user-details-bank' 
+      ? z.string().optional() 
+      : z.string().min(8, { message: 'Password must have more than 6 characters' }),
+    
+    firstName: type === 'sign-in' 
+      ? z.string().optional() 
+      : type === 'user-details-bank' 
+        ? z.string().optional() 
+        : z.string().nonempty("First name is required"),
+    
+    lastName: type === 'sign-in' 
+      ? z.string().optional() 
+      : z.string().nonempty("Last name is required"),
+    
+    address: type === 'sign-in' 
+      ? z.string().optional() 
+      : z.string().max(50, "Address must be less than 50 characters"),
+    
+    state: type === 'sign-in' 
+      ? z.string().optional() 
+      : z.string().nonempty("State is required, 2 letters only"),
+    
+    dob: type === 'sign-in' 
+      ? z.string().optional() 
+      : z.string().nonempty("Date of Birth is required"),
+    
+    city: type === 'sign-in' 
+      ? z.string().optional() 
+      : z.string().nonempty("City is required"),
+    
+    ssn: type === 'sign-in' 
+      ? z.string().optional() 
+      : z.string().refine(
+          (value) => value.length === 9 || value.length === 12, {
+            message: "SSN must be exactly 9 or 12 digits",
+          }
+        ),
+    
+    pincode: type === 'sign-in' 
+      ? z.string().optional() 
+      : z.string().regex(/^\d{5,6}$/, "Pincode must be exactly 5 or 6 (India) digits"),
   });
 
   export function formatDateforDOB(inputDate: string): string | null {
