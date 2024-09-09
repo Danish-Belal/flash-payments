@@ -11,11 +11,82 @@ import {
 
 // import { plaidClient } from "../plaid.config";
 import { plaidClient } from "../plaid";
-import { parseStringify } from "../utils";
+import { extractCustomerIdFromUrl, parseStringify } from "../utils";
 
 import { getTransactionsByBankId } from "./transaction.actions";
 import { getBanks, getBank } from "./user.action";
+import { createAdminClient } from "../appwrite";
+import { ID, Query } from "node-appwrite";
+import { createDwollaCustomer } from "./dwolla.actions";
+import { error } from "console";
+const {
+  APPWRITE_DATABASE_ID : DATABASE_ID,
+  APPWRITE_USER_COLLECTION_ID : USER_COLLECTION_ID,
+  APPWRITE_BANK_COLLECTION_ID : BANK_COLLECTION_ID,
+} = process.env;
 
+export const addBank = async (userData :  NewDwollaCustomerParams) => {
+  console.log("Gonna create Bank");
+  
+  const { email, firstName, lastName, ssn, postalCode } = userData;
+     let aadharNumber: string | undefined;
+     let newUserAccount;
+ 
+     // Helper function to log errors
+     const logError = (message: string, error: any) => {
+         console.error(message, error);
+     };
+ 
+     // Process SSN and postal code
+     if (ssn?.length === 12) {
+         aadharNumber = ssn;
+         userData.ssn = ssn.slice(0, -3); // Remove the last 3 digits of the SSN
+     }
+ 
+     if (postalCode?.length === 6) {
+         userData.postalCode = postalCode.slice(0, -1); // Remove the last digit of the Pincode
+     }
+     userData.state = 'NY';    // By defult adding state as US states.
+ 
+     try {
+        console.log('User DATA',userData);
+        
+         const { account, database } = await createAdminClient();
+
+         // Step 1: Create Dwolla customer first
+        //  const dwollaCustomerUrl = await createDwollaCustomer({
+        //      ...userData,
+        //      type: 'personal',
+        //  });
+         
+         
+ 
+        //  if (!dwollaCustomerUrl) {
+        //      throw new Error('Error creating Dwolla customer');
+        //  }
+ 
+        //  const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+         
+
+         // Step 3: Save the user data to the database
+        //  const newUser = await database.createDocument(
+        //   DATABASE_ID!,
+        //   USER_COLLECTION_ID!,
+        //   ID.unique(),
+        //   {
+        //     ...userData,
+        //     userId: newUserAccount.$id,
+        //     dwollaCustomerId,
+        //     dwollaCustomerUrl
+        //   }
+        // )
+        //  return newUser;
+        return "ok"
+     }catch ( error ){
+      console.error('An error occured', error);
+      }
+
+};
 // Get multiple bank accounts
 export const getAccounts = async ({ userId }: getAccountsProps) => {
   try {

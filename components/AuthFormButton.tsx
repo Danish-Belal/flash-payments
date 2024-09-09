@@ -15,9 +15,9 @@ const AuthFormButton = ({ isLoading, type }: AuthFormButtonProps) => (
       </>
     ) : type === "sign-in" ? (
       "Sign In"
-    ) : (
-      "Sign Up"
-    )}
+    )  : type === "user-details-bank" ? (
+      "Add Details"
+    ) : "Sign Up"}
   </Button>
   </div>
 );

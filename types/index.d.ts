@@ -19,6 +19,18 @@ declare type SignUpParams = {
   email: string;
   password: string;
 };
+declare type UserBankParams = {
+  firstName: string;
+  lastName: string;
+  address1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  dateOfBirth: string;
+  ssn: string;
+  email: string;
+
+};
 
 declare type LoginUser = {
   email: string;
@@ -136,6 +148,11 @@ declare type NewDwollaCustomerParams = {
   dateOfBirth: string;
   ssn: string;
 };
+
+declare type UserDetailsForBank = {
+  user: User;
+  type: string
+}
 
 declare interface CreditCardProps {
   account: Account;

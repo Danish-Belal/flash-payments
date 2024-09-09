@@ -9,6 +9,8 @@ import path from 'path'
 import React from 'react'
 import Footer from './Footer'
 import PlaidLink from './PlaidLink'
+import UserDetailsForm from './UserDetailsForm'
+import AddBank from './AddBank'
 
 const Sidebar = ({user}: SiderbarProps) => {
      const pathname = usePathname();
@@ -42,8 +44,16 @@ const Sidebar = ({user}: SiderbarProps) => {
                )
                })
           }
-          <PlaidLink user={user}/>
+          {/* {user.dateOfBirth ?   (
+               <PlaidLink user={user}/>
+          ): (
+
+               <AddBank user = {user}/>
+          )
+          }
+           */}
           
+          {/* <AddBank user = {user}/> */}
      </nav>
           <Footer user={user} type='desktop' />
     </section>
