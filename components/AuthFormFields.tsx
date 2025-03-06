@@ -69,8 +69,8 @@ const AuthFormFields = ({ type, control }: AuthFormFieldsProps) => (
       {type === "sign-in" && (
         <>
          <p>Just wanna checkout application?? use blow credential</p>
-      <p className="font-semibold">Email: test@flashpay.com</p>
-      <p className="font-semibold">Pass: TestUser@FlashPay</p>
+      <p className="font-semibold">Email: flashpaytestUser@gmail.com</p>
+      <p className="font-semibold">Pass: flashpay@testUser</p>
       <CustomInput 
             control={control} 
             name="email" 
