@@ -31,6 +31,8 @@ const CategoryBatch = ({category}: CategoryBadgeProps)=>{
 }
    
 const TransactionsTable = ({transactions} : TransactionTableProps) => {
+     console.log("All transasctions which have to be displayed", transactions);
+     
   return (
      <Table>
      <TableHeader className='bg-[#f9fafb]'>

@@ -47,9 +47,9 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
           type: accountData.type as string,
           subtype: accountData.subtype! as string,
           appwriteItemId: bank.$id,
-          sharableId: bank.sharableId,
+          sharableId: bank.shareableId,
         };
-        // console.log("SHARABLE ID",account.sharableId);
+        console.log("SHARABLE ID",account.sharableId);
         
 
         return account;
@@ -72,12 +72,13 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
   try {
     // get bank from db
     const bank = await getBank({ documentId: appwriteItemId });
-     // console.log("BANKSSSSS",bank);
+    //  console.log("BANKSSSSS",bank);
      
     // get account info from plaid
     const accountsResponse = await plaidClient.accountsGet({
       access_token: bank.accessToken,
     });
+    // console.log("Account RESPONSEEEE", accountsResponse);
     const accountData = accountsResponse.data.accounts[0];
     // console.log("Account DATATA", accountData);
     
@@ -100,15 +101,24 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
       })
     );
     // console.log("transferTransactionssssssssssss",transferTransactions);
+    // console.log("INSTITUTAION ID DDDDDDDDDDD",accountsResponse.data.item.institution_id!);
+    
     
     // get institution info from plaid
     const institution = await getInstitution({
       institutionId: accountsResponse.data.item.institution_id!,
     });
 
+    // console.log("INSITUTIONASSSSSSSSSSSSSS", institution);
+    
+    // console.log("Going to get randon transactions", );
     const transactions = await getTransactions({
-      accessToken: bank?.accessToken,
+      accessToken: bank.accessToken,
     });
+    // console.log("BAnk access token", bank.accessToken);
+    
+    // console.log("TRASNSACTIONNNNNNNNS,", transactions);
+    
 
     const account = {
       id: accountData.account_id,
@@ -123,10 +133,14 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
       appwriteItemId: bank.$id,
     };
 
+    // console.log("ACCOUNTSSSSSSSSSSSSSSS", account);
+    
+
+    const allTransactions = transferTransactions;
     // sort transactions by date such that the most recent transaction is first
-    const allTransactions = [...transactions, ...transferTransactions].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    // const allTransactions = [...transactions, ...transferTransactions].sort(
+    //   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    // );
     // console.log('ACCOUNTSSSSS', account);
     // console.log('TransactionsSSSSS', transactions);
     
@@ -164,6 +178,11 @@ export const getTransactions = async ({
   let hasMore = true;
   let transactions: any = [];
 
+  // console.log("ACCESS TOKENS", accessToken);
+  // console.log("Plaid client", plaidClient);
+  
+  
+
   try {
     // Iterate through each page of new transaction updates for item
     while (hasMore) {
@@ -172,7 +191,8 @@ export const getTransactions = async ({
       });
 
       const data = response.data;
-
+      console.log("DATATTATA", data);
+      
       transactions = response.data.added.map((transaction) => ({
         id: transaction.transaction_id,
         name: transaction.name,

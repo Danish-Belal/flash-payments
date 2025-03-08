@@ -26,6 +26,8 @@ const TransactionHistory = async({searchParams: {id,page}}:SearchParamProps) => 
      // console.log(appwriteItemId);
      
       const account = await getAccount({appwriteItemId});
+      // console.log("ACCOUNTS TRansactions", account.transactions);
+      
      
       const rowsPerPage = 10;
       const totalNoOfPage = Math.ceil(account?.transactions.length/rowsPerPage);
@@ -36,6 +38,8 @@ const TransactionHistory = async({searchParams: {id,page}}:SearchParamProps) => 
       const currentTransactions = account?.transactions.slice(
         indexOfFirstTransaction, indexOfLastTransaction
   )
+  // console.log("CUrrent Transactions which is goin to be displayed", currentTransactions);
+  
 
 
   return (
@@ -63,9 +67,15 @@ const TransactionHistory = async({searchParams: {id,page}}:SearchParamProps) => 
           </div>
         </div>
         <section className='flex w-full flex-col gap-6'>
-        <TransactionsTable 
-        transactions={currentTransactions}
-        />
+          {currentTransactions ? 
+          <TransactionsTable 
+          transactions={currentTransactions}
+          />:
+          <>
+          NO data found
+          </>
+          }
+        
          {totalNoOfPage > 1 && (
               <div className='my-4 w-full'>
                  <Pagination totalPages={totalNoOfPage} page={currentPage} />
